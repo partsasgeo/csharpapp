@@ -35,9 +35,27 @@ var versionedEndpointRouteBuilder = app.NewVersionedApi();
 versionedEndpointRouteBuilder.MapGet("api/v{version:apiVersion}/getproducts", async (IProductsService productsService) =>
     {
         var products = await productsService.GetProducts();
-        return products;
+        //In case of exception the following check is irrelevant,
+        //however if it somehow returns null then handle it
+        return products != null ? Results.Ok(products) : Results.BadRequest();
     })
     .WithName("GetProducts")
+    .HasApiVersion(1.0);
+
+versionedEndpointRouteBuilder.MapGet("api/v{version:apiVersion}/getproduct/{id:int}", async (int id, IProductsService productsService) =>
+    {
+        var product = await productsService.GetProduct(id);
+        return product != null ? Results.Ok(product) : Results.NotFound(product);
+    })
+    .WithName("GetProduct")
+    .HasApiVersion(1.0);
+
+versionedEndpointRouteBuilder.MapPost("api/v{version:apiVersion}/createproduct", async (CreateProductRequest request, IProductsService productsService) =>
+    {
+        var product = await productsService.CreateProduct(request);
+        return product != null ? Results.Created($"api/v1/getproduct/{product.Id}", product) : Results.BadRequest();
+    })
+    .WithName("CreateProduct")
     .HasApiVersion(1.0);
 
 app.Run();
