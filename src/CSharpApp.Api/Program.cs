@@ -1,3 +1,5 @@
+using CSharpApp.Api.ExceptionHandling;
+using CSharpApp.Core.Dtos;
 using CSharpApp.Core.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +15,7 @@ builder.Services.AddHttpConfiguration(
     builder.Configuration.GetSection(nameof(RestApiSettings)).Get<RestApiSettings>()!,
     builder.Configuration.GetSection(nameof(HttpClientSettings)).Get<HttpClientSettings>()!
     );
+builder.Services.AddExceptionHandler<ExternalApiExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddApiVersioning();
 
@@ -24,6 +27,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseExceptionHandler();
 //app.UseHttpsRedirection();
 
 var versionedEndpointRouteBuilder = app.NewVersionedApi();
