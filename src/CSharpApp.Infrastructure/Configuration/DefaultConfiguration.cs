@@ -11,6 +11,8 @@ public static class DefaultConfiguration
         services.AddSingleton<ICategoriesService, CategoriesService>();
         services.AddSingleton<IAccessTokenProvider, AccessTokenProvider>();
 
+        services.AddTransient<AuthorizationHandler>();
+
         return services;
     }
 }

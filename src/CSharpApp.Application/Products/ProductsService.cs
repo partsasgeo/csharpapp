@@ -18,6 +18,11 @@ public class ProductsService : IProductsService
         _logger = logger;
     }
 
+    private HttpClient CreateClient()
+    {
+        return _httpClientFactory.CreateClient(Constants.EscuelaJsApiAuthenticatedClient);
+    }
+
     private string GetProductsPath()
     {
         var url = _restApiSettings.Products?.TrimStart('/');
@@ -43,7 +48,7 @@ public class ProductsService : IProductsService
     {
         try
         {
-            var client = _httpClientFactory.CreateClient(Constants.EscuelaJsApiClient);
+            var client = CreateClient();
             var url = GetProductsPath();
 
             var response = await client.GetAsync(url, cancellationToken);
@@ -61,7 +66,7 @@ public class ProductsService : IProductsService
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
-        var client = _httpClientFactory.CreateClient(Constants.EscuelaJsApiClient);
+        var client = CreateClient();
         var url = GetProductsPath();
 
         var response = await client.GetAsync($"{url}/{id}", cancellationToken);
@@ -72,7 +77,7 @@ public class ProductsService : IProductsService
 
     public async Task<Product> CreateProduct(CreateProductRequest request, CancellationToken cancellationToken = default)
     {
-        var client = _httpClientFactory.CreateClient(Constants.EscuelaJsApiClient);
+        var client = CreateClient();
         var url = GetProductsPath();
 
         var response = await client.PostAsJsonAsync(url, request, cancellationToken);

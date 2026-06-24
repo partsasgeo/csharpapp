@@ -18,6 +18,11 @@ public class CategoriesService : ICategoriesService
         _logger = logger;
     }
 
+    private HttpClient CreateClient()
+    {
+        return _httpClientFactory.CreateClient(Constants.EscuelaJsApiAuthenticatedClient);
+    }
+
     private string GetCategoriesPath()
     {
         var url = _restApiSettings.Categories?.TrimStart('/');
@@ -42,7 +47,7 @@ public class CategoriesService : ICategoriesService
 
     public async Task<IReadOnlyCollection<Category>> GetCategories(CancellationToken cancellationToken = default)
     {
-        var client = _httpClientFactory.CreateClient(Constants.EscuelaJsApiClient);
+        var client = CreateClient();
         var url = GetCategoriesPath();
 
         var response = await client.GetAsync(url, cancellationToken);
@@ -55,7 +60,7 @@ public class CategoriesService : ICategoriesService
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
-        var client = _httpClientFactory.CreateClient(Constants.EscuelaJsApiClient);
+        var client = CreateClient();
         var url = GetCategoriesPath();
 
         var response = await client.GetAsync($"{url}/{id}", cancellationToken);
@@ -66,7 +71,7 @@ public class CategoriesService : ICategoriesService
 
     public async Task<Category> CreateCategory(CreateCategoryRequest request, CancellationToken cancellationToken = default)
     {
-        var client = _httpClientFactory.CreateClient(Constants.EscuelaJsApiClient);
+        var client = CreateClient();
         var url = GetCategoriesPath();
 
         var response = await client.PostAsJsonAsync(url, request, cancellationToken);

@@ -21,6 +21,16 @@ public static class HttpConfiguration
             .SetHandlerLifetime(TimeSpan.FromMinutes(clientSettings.LifeTime))
             .AddPolicyHandler(GetAsyncPolicy(clientSettings));
 
+        //HttpClient that passes the auth JWT Token as bearer to all requests
+        services
+            .AddHttpClient(Constants.EscuelaJsApiAuthenticatedClient, clientConfig =>
+            {
+                clientConfig.BaseAddress = new Uri(apiSettings.BaseUrl);
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(clientSettings.LifeTime))
+            .AddPolicyHandler(GetAsyncPolicy(clientSettings))
+            .AddHttpMessageHandler<AuthorizationHandler>();
+
         return services;
     }
 
