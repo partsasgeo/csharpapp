@@ -30,49 +30,49 @@ public class CategoriesService : ICategoriesService
         return url;
     }
 
-    private async Task LogErrorsAndEnsureSuccessAsync(HttpResponseMessage response, string operation)
+    private async Task LogErrorsAndEnsureSuccessAsync(HttpResponseMessage response, string operation, CancellationToken cancellationToken)
     {
         if (!response.IsSuccessStatusCode)
         {
-            var errorBody = await response.Content.ReadAsStringAsync();
+            var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
             _logger.LogError("{Operation} failed with {StatusCode}: {Body}", operation, response.StatusCode, errorBody);
         }
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task<IReadOnlyCollection<Category>> GetCategories()
+    public async Task<IReadOnlyCollection<Category>> GetCategories(CancellationToken cancellationToken = default)
     {
         var client = _httpClientFactory.CreateClient(Constants.EscuelaJsApiClient);
         var url = GetCategoriesPath();
 
-        var response = await client.GetAsync(url);
-        await LogErrorsAndEnsureSuccessAsync(response, nameof(GetCategories));
-        var result = await response.Content.ReadFromJsonAsync<List<Category>>();
+        var response = await client.GetAsync(url, cancellationToken);
+        await LogErrorsAndEnsureSuccessAsync(response, nameof(GetCategories), cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<List<Category>>(cancellationToken);
         return result.AsReadOnly();
     }
 
-    public async Task<Category?> GetCategory(int id)
+    public async Task<Category?> GetCategory(int id, CancellationToken cancellationToken = default)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
         var client = _httpClientFactory.CreateClient(Constants.EscuelaJsApiClient);
         var url = GetCategoriesPath();
 
-        var response = await client.GetAsync($"{url}/{id}");
-        await LogErrorsAndEnsureSuccessAsync(response, nameof(GetCategory));
-        var result = await response.Content.ReadFromJsonAsync<Category>();
+        var response = await client.GetAsync($"{url}/{id}", cancellationToken);
+        await LogErrorsAndEnsureSuccessAsync(response, nameof(GetCategory), cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<Category>(cancellationToken);
         return result;
     }
 
-    public async Task<Category> CreateCategory(CreateCategoryRequest request)
+    public async Task<Category> CreateCategory(CreateCategoryRequest request, CancellationToken cancellationToken = default)
     {
         var client = _httpClientFactory.CreateClient(Constants.EscuelaJsApiClient);
         var url = GetCategoriesPath();
 
-        var response = await client.PostAsJsonAsync(url, request);
-        await LogErrorsAndEnsureSuccessAsync(response, nameof(CreateCategory));
+        var response = await client.PostAsJsonAsync(url, request, cancellationToken);
+        await LogErrorsAndEnsureSuccessAsync(response, nameof(CreateCategory), cancellationToken);
 
-        var result = await response.Content.ReadFromJsonAsync<Category>();
+        var result = await response.Content.ReadFromJsonAsync<Category>(cancellationToken);
         return result;
     }
 }

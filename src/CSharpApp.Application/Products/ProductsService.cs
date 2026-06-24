@@ -29,26 +29,26 @@ public class ProductsService : IProductsService
 
         return url;
     }
-    private async Task LogErrorsAndEnsureSuccessAsync(HttpResponseMessage response)
+    private async Task LogErrorsAndEnsureSuccessAsync(HttpResponseMessage response, string operation, CancellationToken cancellationToken)
     {
         if (!response.IsSuccessStatusCode)
         {
-            var errorBody = await response.Content.ReadAsStringAsync();
-            _logger.LogError("CreateProduct failed with {StatusCode}: {Body}", response.StatusCode, errorBody);
+            var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
+            _logger.LogError("{Operation} failed with {StatusCode}: {Body}", operation, response.StatusCode, errorBody);
         }
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task<IReadOnlyCollection<Product>> GetProducts()
+    public async Task<IReadOnlyCollection<Product>> GetProducts(CancellationToken cancellationToken = default)
     {
         try
         {
             var client = _httpClientFactory.CreateClient(Constants.EscuelaJsApiClient);
             var url = GetProductsPath();
 
-            var response = await client.GetAsync(url);
-            await LogErrorsAndEnsureSuccessAsync(response);
-            var result = await response.Content.ReadFromJsonAsync<List<Product>>();
+            var response = await client.GetAsync(url, cancellationToken);
+            await LogErrorsAndEnsureSuccessAsync(response, nameof(GetProducts), cancellationToken);
+            var result = await response.Content.ReadFromJsonAsync<List<Product>>(cancellationToken);
             return result.AsReadOnly();
         }
         catch (Exception)
@@ -57,28 +57,28 @@ public class ProductsService : IProductsService
         }
     }
 
-    public async Task<Product?> GetProduct(int id)
+    public async Task<Product?> GetProduct(int id, CancellationToken cancellationToken = default)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
         var client = _httpClientFactory.CreateClient(Constants.EscuelaJsApiClient);
         var url = GetProductsPath();
 
-        var response = await client.GetAsync($"{url}/{id}");
-        await LogErrorsAndEnsureSuccessAsync(response);
-        var result = await response.Content.ReadFromJsonAsync<Product>();
+        var response = await client.GetAsync($"{url}/{id}", cancellationToken);
+        await LogErrorsAndEnsureSuccessAsync(response, nameof(GetProduct), cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<Product>(cancellationToken);
         return result;
     }
 
-    public async Task<Product> CreateProduct(CreateProductRequest request)
+    public async Task<Product> CreateProduct(CreateProductRequest request, CancellationToken cancellationToken = default)
     {
         var client = _httpClientFactory.CreateClient(Constants.EscuelaJsApiClient);
         var url = GetProductsPath();
 
-        var response = await client.PostAsJsonAsync(url, request);
-        await LogErrorsAndEnsureSuccessAsync(response);
+        var response = await client.PostAsJsonAsync(url, request, cancellationToken);
+        await LogErrorsAndEnsureSuccessAsync(response, nameof(CreateProduct), cancellationToken);
 
-        var result = await response.Content.ReadFromJsonAsync<Product>();
+        var result = await response.Content.ReadFromJsonAsync<Product>(cancellationToken);
         return result;
     }
 }
