@@ -19,4 +19,7 @@ Accept: application/json
 POST {{HostAddress}}/api/{{Version}}/createcategory
 Accept: application/json
 
+POST {{HostAddress}}/api/{{Version}}/login
+Accept: application/json
+
 ###

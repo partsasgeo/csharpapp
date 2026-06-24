@@ -82,4 +82,12 @@ versionedEndpointRouteBuilder.MapPost("api/v{version:apiVersion}/createcategory"
     .WithName("CreateCategory")
     .HasApiVersion(1.0);
 
+versionedEndpointRouteBuilder.MapPost("api/v{version:apiVersion}/login", async (LoginRequest request, IAccessTokenProvider tokenProvider, CancellationToken cancellationToken) =>
+    {
+        var response = await tokenProvider.GetAccessTokenAsync(request, cancellationToken);
+        return response != null ? Results.Ok(response) : Results.BadRequest();
+    })
+    .WithName("Login")
+    .HasApiVersion(1.0);
+
 app.Run();
