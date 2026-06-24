@@ -10,4 +10,13 @@ Accept: application/json
 POST {{HostAddress}}/api/{{Version}}/createproduct
 Accept: application/json
 
+GET {{HostAddress}}/api/{{Version}}/getcategories
+Accept: application/json
+
+GET {{HostAddress}}/api/{{Version}}/getcategory/{id}
+Accept: application/json
+
+POST {{HostAddress}}/api/{{Version}}/createcategory
+Accept: application/json
+
 ###

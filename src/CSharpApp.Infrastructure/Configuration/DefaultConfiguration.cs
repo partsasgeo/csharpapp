@@ -8,7 +8,8 @@ public static class DefaultConfiguration
         services.Configure<HttpClientSettings>(configuration.GetSection(nameof(HttpClientSettings)));
 
         services.AddSingleton<IProductsService, ProductsService>();
-        
+        services.AddSingleton<ICategoriesService, CategoriesService>();
+
         return services;
     }
 }
