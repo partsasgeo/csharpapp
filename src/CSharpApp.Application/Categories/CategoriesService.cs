@@ -53,6 +53,12 @@ public class CategoriesService : ICategoriesService
         var response = await client.GetAsync(url, cancellationToken);
         await LogErrorsAndEnsureSuccessAsync(response, nameof(GetCategories), cancellationToken);
         var result = await response.Content.ReadFromJsonAsync<List<Category>>(cancellationToken);
+        if (result is null)
+        {
+            _logger.LogError("{Operation} received an empty response body", nameof(GetCategories));
+            throw new InvalidOperationException($"{nameof(GetCategories)} received an empty response body.");
+        }
+
         return result.AsReadOnly();
     }
 
@@ -78,6 +84,12 @@ public class CategoriesService : ICategoriesService
         await LogErrorsAndEnsureSuccessAsync(response, nameof(CreateCategory), cancellationToken);
 
         var result = await response.Content.ReadFromJsonAsync<Category>(cancellationToken);
+        if (result is null)
+        {
+            _logger.LogError("{Operation} received an empty response body", nameof(CreateCategory));
+            throw new InvalidOperationException($"{nameof(CreateCategory)} received an empty response body.");
+        }
+
         return result;
     }
 }

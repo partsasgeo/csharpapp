@@ -46,20 +46,19 @@ public class ProductsService : IProductsService
 
     public async Task<IReadOnlyCollection<Product>> GetProducts(CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var client = CreateClient();
-            var url = GetProductsPath();
+        var client = CreateClient();
+        var url = GetProductsPath();
 
-            var response = await client.GetAsync(url, cancellationToken);
-            await LogErrorsAndEnsureSuccessAsync(response, nameof(GetProducts), cancellationToken);
-            var result = await response.Content.ReadFromJsonAsync<List<Product>>(cancellationToken);
-            return result.AsReadOnly();
-        }
-        catch (Exception)
+        var response = await client.GetAsync(url, cancellationToken);
+        await LogErrorsAndEnsureSuccessAsync(response, nameof(GetProducts), cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<List<Product>>(cancellationToken);
+        if (result is null)
         {
-            throw;
+            _logger.LogError("{Operation} received an empty response body", nameof(GetProducts));
+            throw new InvalidOperationException($"{nameof(GetProducts)} received an empty response body.");
         }
+
+        return result.AsReadOnly();
     }
 
     public async Task<Product?> GetProduct(int id, CancellationToken cancellationToken = default)
@@ -84,6 +83,12 @@ public class ProductsService : IProductsService
         await LogErrorsAndEnsureSuccessAsync(response, nameof(CreateProduct), cancellationToken);
 
         var result = await response.Content.ReadFromJsonAsync<Product>(cancellationToken);
+        if (result is null)
+        {
+            _logger.LogError("{Operation} received an empty response body", nameof(CreateProduct));
+            throw new InvalidOperationException($"{nameof(CreateProduct)} received an empty response body.");
+        }
+
         return result;
     }
 }
