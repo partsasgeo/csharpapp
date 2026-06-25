@@ -76,7 +76,7 @@ public class ProductsService : IProductsService
     }
 
     public async Task<Product> CreateProduct(CreateProductRequest request, CancellationToken cancellationToken = default)
-    {
+    {   
         var client = CreateClient();
         var url = GetProductsPath();
 

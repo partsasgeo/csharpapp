@@ -13,6 +13,8 @@ public static class DefaultConfiguration
 
         services.AddTransient<AuthorizationHandler>();
 
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetProductQuery).Assembly));
+
         return services;
     }
 }
