@@ -1,3 +1,5 @@
+using FluentValidation;
+
 namespace CSharpApp.Infrastructure.Configuration;
 
 public static class DefaultConfiguration
@@ -13,7 +15,12 @@ public static class DefaultConfiguration
 
         services.AddTransient<AuthorizationHandler>();
 
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetProductQuery).Assembly));
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(typeof(GetProductQuery).Assembly);
+            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+        });
+        services.AddValidatorsFromAssemblyContaining<CreateProductCommandValidator>(ServiceLifetime.Transient);
 
         return services;
     }

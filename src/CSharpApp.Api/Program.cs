@@ -16,6 +16,7 @@ builder.Services.AddHttpConfiguration(
     builder.Configuration.GetSection(nameof(HttpClientSettings)).Get<HttpClientSettings>()!
     );
 builder.Services.AddExceptionHandler<ExternalApiExceptionHandler>();
+builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddApiVersioning();
 
