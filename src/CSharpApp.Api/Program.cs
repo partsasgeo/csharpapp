@@ -1,4 +1,5 @@
 using CSharpApp.Api.ExceptionHandling;
+using CSharpApp.Api.PerformanceMiddleware;
 using CSharpApp.Core.Dtos;
 using CSharpApp.Core.Settings;
 
@@ -30,6 +31,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseExceptionHandler();
 //app.UseHttpsRedirection();
+app.UseMiddleware<PerformanceLoggingMiddleware>();
 
 var versionedEndpointRouteBuilder = app.NewVersionedApi();
 
