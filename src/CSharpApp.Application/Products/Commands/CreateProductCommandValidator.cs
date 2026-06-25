@@ -26,7 +26,7 @@ namespace CSharpApp.Application.Products.Commands
 
             RuleFor(x => x.Request.Images)
                 .NotNull().WithMessage($"{nameof(CreateProductRequest.Images)} must not be empty.")
-                .Must(x => x.Any()).WithMessage($"{nameof(CreateProductRequest.Images)} must contain at least one image.")
+                .Must(x => x?.Any() == true).WithMessage($"{nameof(CreateProductRequest.Images)} must contain at least one image.")
                 .OverridePropertyName(nameof(CreateProductRequest.Images));
         }
     }
